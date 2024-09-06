@@ -1,0 +1,20 @@
+#myCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 90%;
+}
+
+#inputBox {
+    box-sizing: border-box;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100svw;
+    padding: 16px;
+    border: none;
+    border-top: 1px solid #000;
+    font-size: 32px;
+}
