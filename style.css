@@ -1,0 +1,55 @@
+body {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 16px;
+}
+
+*, *:before, *:after { 
+    box-sizing: border-box; 
+}
+
+* {
+    margin: 0; 
+}
+
+img {
+    max-width: 100%; 
+}
+
+p, h1, h2, h3, h4, h5, h6 {
+    overflow-wrap: break-word;
+}
+
+ul { 
+    padding: 0;
+    list-style: none;
+}
+
+.wrapper{
+    max-width: 100%;
+    padding: 32px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.main-title{
+    margin: 24px;
+}
+
+.link-list{
+    margin-top: 48px;
+    font-size: 24px;
+}
+
+.link-list-item a{
+    transition: letter-spacing 0.3s ease-out;
+    margin-bottom: 16px;
+}
+
+.link-list-item a:hover{
+    letter-spacing: 1px;
+}
+
+.link-list-item a:visited{
+    color: rgb(178, 178, 178);
+}
