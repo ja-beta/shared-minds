@@ -9,9 +9,9 @@ const temporalities = ["none", "past", "present", "immediate future", "future", 
 
 const dropdownsContainer = document.getElementById("dropdowns-wrapper");
 const txtPrompt = document.getElementById("prompt_text");
-const imgPrompt = document.getElementById("image_container");
 const textDiv = document.getElementById("resulting_text");
-const sumbmitBtn = document.getElementById("submit_button");
+const submitBtn = document.getElementById("submit_button");
+const imageContainer = document.getElementById("image_container");
 
 const paramArrays = {
     tone: tones,
@@ -20,10 +20,6 @@ const paramArrays = {
     context: contexts,
     temporality: temporalities
 };
-
-const image_container = document.getElementById("image_container");
-
-
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -34,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
         label.textContent = `${name.charAt(0).toUpperCase() + name.slice(1)}:`;
         label.setAttribute("for", `${name}-dropdown`);
         container.appendChild(label);
-    
+
         const dropdown = document.createElement("select");
         dropdown.id = `${name}-dropdown`;
         values.forEach((value, index) => {
@@ -44,19 +40,19 @@ document.addEventListener("DOMContentLoaded", () => {
             dropdown.appendChild(option);
         });
         container.appendChild(dropdown);
-    
+
         dropdownsContainer.appendChild(container);
-    
+
         dropdown.addEventListener("change", updateProphecy);
     }
-    
+
     function updateProphecy() {
         const tone = tones[document.getElementById("tone-dropdown").value];
         const theme = themes[document.getElementById("theme-dropdown").value];
         const mood = moods[document.getElementById("mood-dropdown").value];
         const context = contexts[document.getElementById("context-dropdown").value];
         const temporality = temporalities[document.getElementById("temporality-dropdown").value];
-    
+
         const parts = {
             tone: tone !== "none" ? tone : null,
             theme: theme !== "none" ? theme : null,
@@ -64,25 +60,28 @@ document.addEventListener("DOMContentLoaded", () => {
             context: context !== "none" ? context : null,
             temporality: temporality !== "none" ? temporality : null
         };
-    
+
         const sentenceParts = [];
-        if (parts.tone) sentenceParts.push(` in a ${parts.tone} tone`);
+        if (parts.tone) sentenceParts.push(`in a ${parts.tone} tone`);
         if (parts.mood) sentenceParts.push(`with a ${parts.mood} mood`);
         if (parts.theme) sentenceParts.push(`using a theme of ${parts.theme}`);
         if (parts.context) sentenceParts.push(`set in the context of ${parts.context}`);
         if (parts.temporality) sentenceParts.push(`and refer to events in the ${parts.temporality}`);
-    
+
         txtPrompt.textContent = `Compose a short greek-style prophecy ${sentenceParts.join(", ")}. You must limit your answer to a maximum of ${maxLength} words.`;
     }
-    
+
     Object.keys(paramArrays).forEach((param) => createDropdown(param, paramArrays[param]));
     updateProphecy();
-    
-    sumbmitBtn.addEventListener("click", () => {
-        askForWords(txtPrompt.textContent);
-        askForPicture();
+
+    submitBtn.addEventListener("click", async () => {
+        const generatedText = await askForWords(txtPrompt.textContent);
+        if (generatedText) {
+            await askForPicture(generatedText);
+        }
+        // askForPicture("a black and white dog");
     });
-    
+
     async function askForWords(p_prompt) {
         document.body.style.cursor = "progress";
         textDiv.innerHTML = "Waiting for reply from Replicate...";
@@ -103,14 +102,29 @@ document.addEventListener("DOMContentLoaded", () => {
         };
         const url = replicateProxy + "/create_n_get/";
         console.log("words url", url, "words options", options);
-        const words_response = await fetch(url, options);
-        console.log("words_response", words_response);
-        const proxy_said = await words_response.json();
-        if (proxy_said.output.length == 0) {
+        try {
+            const words_response = await fetch(url, options);
+            if (!words_response.ok) {
+                throw new Error(`HTTP error! status: ${words_response.status}`);
+            }
+            const proxy_said = await words_response.json();
+            console.log("proxy_said", proxy_said);
+    
+            if (!proxy_said.output || proxy_said.output.length === 0) {
+                textDiv.innerHTML = "Something went wrong, try it again";
+                return null;
+            } else {
+                const generatedText = proxy_said.output.join("");
+                textDiv.innerHTML = generatedText;
+                console.log("Generated Text:", generatedText);
+                return generatedText;
+            }
+        } catch (error) {
+            console.error("Error fetching words:", error);
             textDiv.innerHTML = "Something went wrong, try it again";
-        } else {
-            textDiv.innerHTML = proxy_said.output.join("");
-            console.log("proxy_said", proxy_said.output.join(""));
+            return null;
+        } finally {
+            document.body.style.cursor = "default";
         }
     }
 
@@ -118,11 +132,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const imageDiv = document.getElementById("resulting_image");
         imageDiv.innerHTML = "Waiting for reply from Replicate's Stable Diffusion API...";
         let data = {
-            "version": "da77bc59ee60423279fd632efb4795ab731d9e3ca9705ef3341091fb989b7eaf",
+            modelURL: "https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions",
             input: {
                 "prompt": p_prompt,
-                "width": 512,
-                "height": 512,
+                // "width": 512,
+                // "height": 512,
             },
         };
         console.log("Asking for Picture Info From Replicate via Proxy", data);
@@ -135,17 +149,22 @@ document.addEventListener("DOMContentLoaded", () => {
         };
         const url = replicateProxy + "/create_n_get/";
         console.log("url", url, "options", options);
-        const picture_info = await fetch(url, options);
-        //console.log("picture_response", picture_info);
-        const proxy_said = await picture_info.json();
-    
-        if (proxy_said.output.length == 0) {
+        try {
+            const picture_info = await fetch(url, options);
+            const proxy_said = await picture_info.json();
+            console.log("proxy_said", proxy_said);
+
+            if (!proxy_said.output || proxy_said.output.length === 0) {
+                imageDiv.innerHTML = "Something went wrong, try it again";
+            } else {
+                imageDiv.innerHTML = "";
+                let img = document.createElement("img");
+                img.src = proxy_said.output[0];
+                imageDiv.appendChild(img);
+            }
+        } catch (error) {
+            console.error("Error fetching picture:", error);
             imageDiv.innerHTML = "Something went wrong, try it again";
-        } else {
-            imageDiv.innerHTML = "";
-            let img = document.createElement("img");
-            img.src = proxy_said.output[0];
-            imageDiv.appendChild(img);
         }
     }
 
