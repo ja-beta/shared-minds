@@ -1,11 +1,11 @@
 const replicateProxy = "https://replicate-api-proxy.glitch.me";
 const maxLength = 16;
 
-const tones = ["none", "cryptic", "direct", "metaphorical", "enigmatic"];
+const tones = ["none", "cryptic", "direct", "metaphorical", "enigmatic", "solemn", "cautionary", "ironic", "didactic", "commanding", "ethereal", "paradoxical", "whimsical"];
 const themes = ["none", "love", "hate", "fear", "hope", "despair", "loneliness", "friendship", "betrayal", "forgiveness", "revenge", "peace", "war", "life", "death", "growth", "decay", "light", "darkness", "good", "evil", "chaos", "order", "freedom"];
-const moods = ["none", "ominous", "hopeful", "neutral", "foreboding", "inspiring", "encouraging", "depressing", "playful", "calm", "gloomy"];
-const contexts = ["none", "a battlefield", "a temple", "a sea", "the underworld", "a garden", "a modern city", "a bridge", "a house", "a village"];
-const temporalities = ["none", "past", "present", "immediate future", "future", "eternal"];
+const moods = ["none", "ominous", "hopeful", "neutral", "foreboding", "inspiring", "encouraging", "depressing", "playful", "calm", "gloomy", "exciting", "bittersweet", "absurd"];
+const contexts = ["none", "a battlefield", "a temple", "a sea", "the underworld", "a garden", "a modern city", "a bridge", "a house", "a village", "a desert", "a forest", "a mountain", "a cave", "a palace", "outer space"];
+const temporalities = ["none", "past", "present", "immediate future", "future", "eternal", "past life", "future life", "a dream", "a nightmare", "a vision"];
 
 const dropdownsContainer = document.getElementById("dropdowns-wrapper");
 const txtPrompt = document.getElementById("text_container");
