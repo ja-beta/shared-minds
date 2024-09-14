@@ -109,7 +109,7 @@ p{
 #resulting_image > img{
     width: 200px;
     height: 200px;
-    filter: blur(40px);
+    filter: blur(10px);
     transition: all 3s ease-out;
     border-radius: 50%;
     margin-bottom: 32px;
@@ -121,7 +121,9 @@ p{
     height: 240px;
     filter: blur(0px);
     border-radius: 0;
+    margin-bottom: 0;
 }
+
 
 #dropdowns-wrapper{
     display: flex;
@@ -165,4 +167,5 @@ p{
     font-family: 'editorial-new', sans-serif;
     font-size: 24px;
     font-weight: 200;
+    cursor: pointer;
 }
