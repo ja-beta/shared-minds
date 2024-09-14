@@ -8,7 +8,7 @@ const contexts = ["none", "a battlefield", "a temple", "a sea", "the underworld"
 const temporalities = ["none", "past", "present", "immediate future", "future", "eternal"];
 
 const dropdownsContainer = document.getElementById("dropdowns-wrapper");
-const txtPrompt = document.getElementById("prompt_text");
+const txtPrompt = document.getElementById("text_container");
 const textDiv = document.getElementById("resulting_text");
 const submitBtn = document.getElementById("submit_button");
 const imageContainer = document.getElementById("image_container");
@@ -68,14 +68,14 @@ document.addEventListener("DOMContentLoaded", () => {
         if (parts.context) sentenceParts.push(`set in the context of ${parts.context}`);
         if (parts.temporality) sentenceParts.push(`and refer to events in the ${parts.temporality}`);
 
-        txtPrompt.textContent = `Compose a short greek-style prophecy ${sentenceParts.join(", ")}. You must limit your answer to a maximum of ${maxLength} words.`;
+        txtPrompt.textContent = `Compose a short greek-style prophecy ${sentenceParts.join(", ")}.`;
     }
 
     Object.keys(paramArrays).forEach((param) => createDropdown(param, paramArrays[param]));
     updateProphecy();
 
     submitBtn.addEventListener("click", async () => {
-        const generatedText = await askForWords(txtPrompt.textContent);
+        const generatedText = await askForWords(txtPrompt.textContent + ` You must limit your answer to a maximum of ${maxLength} words.`);
         if (generatedText) {
             await askForPicture(generatedText);
         }
@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function askForWords(p_prompt) {
         document.body.style.cursor = "progress";
-        textDiv.innerHTML = "Waiting for reply from Replicate...";
+        textDiv.innerHTML = "Contacting Fate...";
         const data = {
             "version": "35042c9a33ac8fd5e29e27fb3197f33aa483f72c2ce3b0b9d201155c7fd2a287",
             input: {
@@ -111,7 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log("proxy_said", proxy_said);
     
             if (!proxy_said.output || proxy_said.output.length === 0) {
-                textDiv.innerHTML = "Something went wrong, try it again";
+                textDiv.innerHTML = "Something went wrong, try again";
                 return null;
             } else {
                 const generatedText = proxy_said.output.join("");
@@ -121,7 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         } catch (error) {
             console.error("Error fetching words:", error);
-            textDiv.innerHTML = "Something went wrong, try it again";
+            textDiv.innerHTML = "Something went wrong, try again";
             return null;
         } finally {
             document.body.style.cursor = "default";
@@ -130,7 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function askForPicture(p_prompt) {
         const imageDiv = document.getElementById("resulting_image");
-        imageDiv.innerHTML = "Waiting for reply from Replicate's Stable Diffusion API...";
+        imageDiv.innerHTML = "Fetching vision...";
         let data = {
             modelURL: "https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions",
             input: {

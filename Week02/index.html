@@ -8,20 +8,28 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="text_container">
-        <div id="prompt_text"></div>
+    <div class="left-side">
+        <h1 class="h1-header">Prophecy Generator</h1>
+        <div id="dropdowns-wrapper"></div>
+        <button id="submit_button">Submit</button>
+        <div id="checkbox-container">
+            <input type="checkbox" id="checkbox">
+            <label for="checkbox">show prompt</label>
+        </div>
+        <div id="text_container">
+            <p id="prompt_text"></p>
+        </div>
+    </div>
+    <div class="right-side">
+        <div id="image_container">
+            <div id="resulting_image"></div>
+        </div>
         <div id="resulting_text"></div>
     </div>
 
-    <div id="dropdowns-wrapper"></div>
-    <button id="submit_button">Submit</button>
-    <div id="checkbox-container">
-        <input type="checkbox" id="checkbox">
-        <label for="checkbox">show prompt</label>
-    </div>
-    <div id="image_container">
-        <div id="resulting_image"></div>
-    </div>
+
+
+
 
 
     <script src="script.js"></script>
