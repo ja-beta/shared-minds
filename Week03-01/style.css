@@ -8,10 +8,14 @@ body{
     align-items: center;
 }
 
-/* canvas{
-    width: 99vw;
-    height: 90vh;
-} */
+canvas{
+    /* width: 99vw;
+    height: 90vh; */
+    border: 1px solid #ccc;
+    border-radius: 24px;
+    background-color: rgba(255, 255, 255, 0.419);
+    margin-top: 40px;
+}
 
 #input-container{
     position: fixed;
