@@ -1,0 +1,45 @@
+body{
+    box-sizing: border-box;
+    font-family: 'helvetica';
+    background-color: #e5e5e5;
+    font-size: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* canvas{
+    width: 99vw;
+    height: 90vh;
+} */
+
+#input-container{
+    position: fixed;
+    bottom: 40px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 80px;
+    column-gap: 32px;
+}
+
+
+#inputField1, #inputField2{
+    outline: none;
+    border: 1px solid #ccc;
+    font-size: 24px;
+    border-radius: 8px;
+    padding: 8px 16px;
+}
+
+
+#submitButton{
+    border: 1px solid #ccc;
+    background-color: white;
+    font-size: 24px;
+    border-radius: 8px;
+    padding: 8px 16px;
+    cursor: pointer;
+}

@@ -82,20 +82,22 @@ async function askLLM(textInput1, textInput2) {
 }
 
 function initInterface() {
+    const inputContainer = document.getElementById('input-container');
+    
     const inputField1 = document.createElement('input');
     inputField1.id = 'inputField1';
     inputField1.placeholder = 'Enter first word';
-    document.body.appendChild(inputField1);
+    inputContainer.appendChild(inputField1);
 
     const inputField2 = document.createElement('input');
     inputField2.id = 'inputField2';
     inputField2.placeholder = 'Enter second word';
-    document.body.appendChild(inputField2);
+    inputContainer.appendChild(inputField2);
 
     const submitButton = document.createElement('button');
     submitButton.id = 'submitButton';
     submitButton.innerText = 'Blend';
-    document.body.appendChild(submitButton);
+    inputContainer.appendChild(submitButton);
 
     submitButton.addEventListener('click', handleSubmit);
 }
@@ -110,26 +112,72 @@ async function handleSubmit() {
     const words = [inputField1, inputField2, blendedWord];
     const embeddings = await askEmbeddingModel(words.join("\n"));
 
-    drawWords(embeddings);
+    clearCanvas();
+    drawWords(words, embeddings);
 }
 
-function drawWords(embeddings) {
+function clearCanvas() {
+    const existingCanvas = document.querySelector('canvas');
+    if (existingCanvas) {
+        existingCanvas.remove();
+    }
+}
+
+function drawWords(words, embeddings) {
     const canvas = document.createElement('canvas');
-    canvas.width = 600;
-    canvas.height = 600;
+    canvas.width = 800; 
+    canvas.height = 800; 
     document.body.appendChild(canvas);
 
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const positions = embeddings.map(e => e.embedding);
-    const [pos1, pos2, pos3] = positions;
+    const normalizedPositions = normalizeCoordinates(positions, canvas.width, canvas.height);
 
-    const x1 = 100, y1 = 100;
-    const x2 = 500, y2 = 100;
-    const x3 = (x1 + x2) / 2, y3 = 400;
+    normalizedPositions.forEach((pos, index) => {
+        if (index < 2) {
+            ctx.fillStyle = 'grey';
+        } else {
+            ctx.fillStyle = 'black'; 
+        }
+        ctx.font = '48px Helvetica'; 
+        ctx.fillText(words[index], pos[0], pos[1]);
+    });
+}
 
-    ctx.fillText(embeddings[0].input, x1, y1);
-    ctx.fillText(embeddings[1].input, x2, y2);
-    ctx.fillText(embeddings[2].input, x3, y3);
+function normalizeCoordinates(positions, width, height) {
+    const minX = Math.min(...positions.map(pos => pos[0]));
+    const maxX = Math.max(...positions.map(pos => pos[0]));
+    const minY = Math.min(...positions.map(pos => pos[1]));
+    const maxY = Math.max(...positions.map(pos => pos[1]));
+
+    const padding = 200; 
+    const scaleX = (width - 2 * padding) / (maxX - minX);
+    const scaleY = (height - 2 * padding) / (maxY - minY);
+
+    return positions.map(pos => [
+        padding + (pos[0] - minX) * scaleX,
+        padding + (pos[1] - minY) * scaleY,
+    ]);
+}
+
+function cosineSimilarity(vecA, vecB) {
+    return dotProduct(vecA, vecB) / (magnitude(vecA) * magnitude(vecB));
+}
+
+function dotProduct(vecA, vecB) {
+    let product = 0;
+    for (let i = 0; i < vecA.length; i++) {
+        product += vecA[i] * vecB[i];
+    }
+    return product;
+}
+
+function magnitude(vec) {
+    let sum = 0;
+    for (let i = 0; i < vec.length; i++) {
+        sum += vec[i] * vec[i];
+    }
+    return Math.sqrt(sum);
 }
