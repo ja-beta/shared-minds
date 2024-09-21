@@ -5,7 +5,7 @@ const tones = ["none", "cryptic", "direct", "metaphorical", "enigmatic", "solemn
 const themes = ["none", "love", "hate", "fear", "hope", "despair", "loneliness", "friendship", "betrayal", "forgiveness", "revenge", "peace", "war", "life", "death", "growth", "decay", "light", "darkness", "good", "evil", "chaos", "order", "freedom"];
 const moods = ["none", "ominous", "hopeful", "neutral", "foreboding", "inspiring", "encouraging", "depressing", "playful", "calm", "gloomy", "exciting", "bittersweet", "absurd"];
 const contexts = ["none", "a battlefield", "a temple", "a sea", "the underworld", "a garden", "a modern city", "a bridge", "a house", "a village", "a desert", "a forest", "a mountain", "a cave", "a palace", "outer space"];
-const temporalities = ["none", "past", "present", "immediate future", "future", "eternal", "past life", "future life", "a dream", "a nightmare", "a vision"];
+const temporalities = ["none", "the past", "the present", "the immediate future", "the future", "the eternal", "a past life", "a future life", "a dream", "a nightmare", "a vision"];
 
 const dropdownsContainer = document.getElementById("dropdowns-wrapper");
 const txtPrompt = document.getElementById("text_container");
@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (parts.mood) sentenceParts.push(`with a ${parts.mood} mood`);
         if (parts.theme) sentenceParts.push(`using a theme of ${parts.theme}`);
         if (parts.context) sentenceParts.push(`set in the context of ${parts.context}`);
-        if (parts.temporality) sentenceParts.push(`and refer to events in the ${parts.temporality}`);
+        if (parts.temporality) sentenceParts.push(`and refer to events in ${parts.temporality}`);
 
         txtPrompt.textContent = `Compose a short greek-style prophecy ${sentenceParts.join(", ")}.`;
     }
