@@ -123,31 +123,13 @@ function drawWords(embeddings) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const positions = embeddings.map(e => e.embedding);
-    const projectedPositions = projectTo2D(positions);
+    const [pos1, pos2, pos3] = positions;
 
-    const normalizedPositions = normalizeCoordinates(projectedPositions, canvas.width, canvas.height);
+    const x1 = 100, y1 = 100;
+    const x2 = 500, y2 = 100;
+    const x3 = (x1 + x2) / 2, y3 = 400;
 
-    normalizedPositions.forEach((pos, index) => {
-        ctx.fillText(embeddings[index].input, pos[0], pos[1]);
-    });
-}
-
-function projectTo2D(embeddings) {
-    // Ensure embeddings are in matrix format
-    const matrixEmbeddings = embeddings.map(e => Object.values(e));
-    const vectors = PCA.getEigenVectors(matrixEmbeddings);
-    const reduced = PCA.computeAdjustedData(matrixEmbeddings, vectors, 2);
-    return reduced.adjustedData;
-}
-
-function normalizeCoordinates(positions, width, height) {
-    const minX = Math.min(...positions.map(pos => pos[0]));
-    const maxX = Math.max(...positions.map(pos => pos[0]));
-    const minY = Math.min(...positions.map(pos => pos[1]));
-    const maxY = Math.max(...positions.map(pos => pos[1]));
-
-    return positions.map(pos => [
-        ((pos[0] - minX) / (maxX - minX)) * width,
-        ((pos[1] - minY) / (maxY - minY)) * height,
-    ]);
+    ctx.fillText(embeddings[0].input, x1, y1);
+    ctx.fillText(embeddings[1].input, x2, y2);
+    ctx.fillText(embeddings[2].input, x3, y3);
 }
