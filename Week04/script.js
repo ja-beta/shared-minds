@@ -22,7 +22,7 @@ function subscribeToData() {
 
         if (latestEntry && latestEntry.line) {
             const prompt = `Please perform sentiment analysis on the following text: ${latestEntry.line} and provide a score between 0 and 1, 0 being negative and 1 being positive. Your response should be the score number only.`;
-            askValue(latestEntry.line, snapshot.key);
+            askValue(prompt, snapshot.key);
         }
     });
 }
@@ -30,12 +30,13 @@ function subscribeToData() {
 async function askValue(prompt, key) {
     document.body.style.cursor = "progress";
     const data = {
-        modelURL: "https://api.replicate.com/v1/models/curt-park/sentiment-analysis",
+        modelURL: "https://api.replicate.com/v1/models/meta/meta-llama-3-70b-instruct/predictions",
         input: {
             prompt: prompt,
         },
     };
     console.log("Making a Request", data);
+    console.log("API URL:", apiUrl); // Log the API URL to ensure it's correct
     const options = {
         method: "POST",
         headers: {
@@ -54,12 +55,12 @@ async function askValue(prompt, key) {
 
         console.log("Full response from API:", result);
 
-        if (!result.label || !result.score) {
+        if (!result.output || result.output.length === 0) {
             console.log("Something went wrong, try it again");
         } else {
             console.log("Returned from API", result);
-            const score = result.score; 
-            updateScoreInFirebase(key, score);
+            const score = result.output.join('').trim(); // Combine the elements of the output array to form the score
+            updateScoreInFirebase(key, parseFloat(score)); // Convert the score to a float
         }
     } catch (error) {
         console.error("Error fetching data:", error);
