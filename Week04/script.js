@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-import { getDatabase, ref, onChildAdded, update } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
+import { getDatabase, ref, off, onValue, update, set, push, onChildAdded, onChildChanged, onChildRemoved } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
 import { firebaseConfig, apiUrl } from './config.js';
 
 let db;
@@ -21,7 +21,7 @@ function subscribeToData() {
         console.log("Latest entry:", latestEntry);
 
         if (latestEntry && latestEntry.line) {
-            const prompt = `Please perform sentiment analysis on the following text: ${latestEntry.line} and provide a score between 0 and 1, 0 being negative and 1 being positive. Your response should be the score number only.`;
+            const prompt = `Please perform sentiment analysis on the following text: ${latestEntry.line}. Provide a score between 0 and 1, 0 being negative and 1 being positive. The number is a float of up to 6 decimal places. Your response should be the score number only.`;
             askValue(prompt, snapshot.key);
         }
     });
@@ -36,7 +36,6 @@ async function askValue(prompt, key) {
         },
     };
     console.log("Making a Request", data);
-    console.log("API URL:", apiUrl); // Log the API URL to ensure it's correct
     const options = {
         method: "POST",
         headers: {
@@ -59,8 +58,8 @@ async function askValue(prompt, key) {
             console.log("Something went wrong, try it again");
         } else {
             console.log("Returned from API", result);
-            const score = result.output.join('').trim(); // Combine the elements of the output array to form the score
-            updateScoreInFirebase(key, parseFloat(score)); // Convert the score to a float
+            const score = result.output.join('').trim(); 
+            updateScoreInFirebase(key, parseFloat(score)); 
         }
     } catch (error) {
         console.error("Error fetching data:", error);
@@ -91,3 +90,39 @@ async function fetchWithTimeout(resource, options, timeout = 30000) {
     clearTimeout(id);
     return response;
 }
+
+function addQuery(query){
+    const folder = "items";
+    const thisRef = ref(db, folder);
+
+    onValue(thisRef, (snapshot) => {
+        const data = snapshot.val();
+        const keys = Object.keys(data || {});
+        const nextKey = keys.length.toString();
+
+        const newEntry = {
+            line: query,
+            score: 0,
+            timestamp: new Date().toISOString(),
+        };
+
+        const newRef = ref(db, `${folder}/${nextKey}`);
+        set(newRef, newEntry).then(() => {
+            console.log("Query added successfully");
+        })
+        .catch((error) => {
+            console.error("Error adding query:", error);
+        });
+    }, {
+        onlyOnce: true
+    });
+}
+
+const inputField = document.getElementById("input-query");
+const submitButton = document.getElementById("submit-query");
+
+submitButton.addEventListener("click", () => {
+    const query = inputField.value;
+    addQuery(query);
+    inputField.value = "";
+});
