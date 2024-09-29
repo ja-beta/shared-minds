@@ -20,16 +20,18 @@ body{
     border-radius: 50%;
     background-color: lightgray;
 }
+#meter {
+    width: 50%;
+    height: 24px;
 
-meter::-webkit-meter-bar {
+}
+
+meter::-webkit-meter-optimum-value{
     background: none;
     background-image: linear-gradient(
         90deg,
-        #f6f6f6 20%,
-        #e9ecef 40%,
-        #f6f6f6 60%,
-        #e9ecef 80%,
-        #e9ecef 100%
+        #eeeeee 0%,
+        #000000 100%
     );
     background-size: 100% 100%;
 }
@@ -40,10 +42,6 @@ meter::-webkit-meter-bar {
     margin-top: 64px;
 }
 
-#meter{
-    width: 50%;
-    height: 24px;
-}
 
 #input-container{
     display: flex;
