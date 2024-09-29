@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function updateMeter(average) {
         console.log("Updating meter with average:", average);
         meterElement.value = average;
-        meterLabelVal.textContent = average.toFixed(6); // Display up to 6 decimal places
+        meterLabelVal.textContent = average.toFixed(6);
     }
 
     initFirebaseDB();
@@ -167,6 +167,8 @@ document.addEventListener("DOMContentLoaded", () => {
             onlyOnce: true
         });
     }
+
+    // NYTimes API ______________________________________________________________________________________
 
     function callNytApi() {
         fetchNytArticles();
