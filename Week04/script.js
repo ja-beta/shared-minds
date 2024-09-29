@@ -6,6 +6,8 @@ let db;
 
 initFirebaseDB();
 subscribeToData();
+subscribeToScoreUpdates();
+
 
 function initFirebaseDB() {
     const app = initializeApp(firebaseConfig);
@@ -20,7 +22,7 @@ function subscribeToData() {
         const latestEntry = snapshot.val();
         console.log("Latest entry:", latestEntry);
 
-        if (latestEntry && latestEntry.line) {
+        if (latestEntry && latestEntry.line && !latestEntry.score) {
             const prompt = `Please perform sentiment analysis on the following text: ${latestEntry.line}. Provide a score between 0 and 1, 0 being negative and 1 being positive. The number is a float of up to 6 decimal places. Your response should be the score number only.`;
             askValue(prompt, snapshot.key);
         }
@@ -58,8 +60,8 @@ async function askValue(prompt, key) {
             console.log("Something went wrong, try it again");
         } else {
             console.log("Returned from API", result);
-            const score = result.output.join('').trim(); 
-            updateScoreInFirebase(key, parseFloat(score)); 
+            const score = result.output.join('').trim();
+            updateScoreInFirebase(key, parseFloat(score));
         }
     } catch (error) {
         console.error("Error fetching data:", error);
@@ -69,7 +71,7 @@ async function askValue(prompt, key) {
 }
 
 function updateScoreInFirebase(key, score) {
-    const folder = "items"; 
+    const folder = "items";
     const dbRef = ref(db, `${folder}/${key}`);
     update(dbRef, { score: score })
         .then(() => {
@@ -91,7 +93,7 @@ async function fetchWithTimeout(resource, options, timeout = 30000) {
     return response;
 }
 
-function addQuery(query){
+function addQuery(query) {
     const folder = "items";
     const thisRef = ref(db, folder);
 
@@ -102,7 +104,7 @@ function addQuery(query){
 
         const newEntry = {
             line: query,
-            score: 0,
+            score: null,
             timestamp: new Date().toISOString(),
         };
 
@@ -110,9 +112,9 @@ function addQuery(query){
         set(newRef, newEntry).then(() => {
             console.log("Query added successfully");
         })
-        .catch((error) => {
-            console.error("Error adding query:", error);
-        });
+            .catch((error) => {
+                console.error("Error adding query:", error);
+            });
     }, {
         onlyOnce: true
     });
@@ -126,3 +128,37 @@ submitButton.addEventListener("click", () => {
     addQuery(query);
     inputField.value = "";
 });
+
+
+// SCORE CALCULATION
+function subscribeToScoreUpdates() {
+    const folder = "items";
+    const thisRef = ref(db, folder);
+
+    onChildChanged(thisRef, (snapshot) => {
+        const updatedEntry = snapshot.val();
+
+        if (updatedEntry && typeof updatedEntry.score === "number") {
+            calculateAverage();
+        }
+    });
+}
+
+function calculateAverage() {
+    const folder = "items";
+    const thisRef = ref(db, folder);
+
+    onValue(thisRef, (snapshot) => {
+        const data = snapshot.val();
+        const keys = Object.keys(data || {});
+        const totalScores = keys.reduce((sum, key) => sum + (data[key].score || 0), 0);
+        const average = totalScores / keys.length;
+
+
+        console.log("Average score:", average);
+        const scoreElement = document.getElementById("score");
+        scoreElement.innerText = average;
+    }, {
+        onlyOnce: true
+    });
+}
