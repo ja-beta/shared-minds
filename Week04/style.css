@@ -1,0 +1,51 @@
+:root{
+    
+}
+
+body{
+
+}
+
+.wrapper{
+    margin: 80px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 40px;
+}
+
+#nyt-indicator{
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: lightgray;
+}
+
+meter::-webkit-meter-bar {
+    background: none;
+    background-image: linear-gradient(
+        90deg,
+        #f6f6f6 20%,
+        #e9ecef 40%,
+        #f6f6f6 60%,
+        #e9ecef 80%,
+        #e9ecef 100%
+    );
+    background-size: 100% 100%;
+}
+
+#meter-label{
+    font-size: 2.5rem;
+    font-weight: 400;
+    margin-top: 64px;
+}
+
+#meter{
+    width: 50%;
+    height: 24px;
+}
+
+#input-container{
+    display: flex;
+    column-gap: 16px;
+}
