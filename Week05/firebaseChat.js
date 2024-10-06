@@ -122,15 +122,12 @@ function createGrid(x, y) {
                         div.style.backgroundColor = "rgb(255, 255, 255)";
                         cellData.currentColor = "white";
                     } else {
-                        // If counts are equal, choose randomly
                         const randomColor = Math.random() < 0.5 ? "black" : "white";
                         div.style.backgroundColor = randomColor === "black" ? "rgb(0, 0, 0)" : "rgb(255, 255, 255)";
                         cellData.currentColor = randomColor;
                     }
-                    // Update the database with the currentColor
                     set(cellRef, cellData);
                 } else {
-                    // Initialize cell data in the database if it doesn't exist
                     set(cellRef, {
                         blackCount: 0,
                         whiteCount: 0,
