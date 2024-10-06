@@ -22,14 +22,20 @@
     <!-- The surrounding HTML is left untouched by FirebaseUI.
        Your app may use that space for branding, controls and other customizations.-->
     <div id="firebaseui-auth-container">
-      <div id="profile">
-        <!-- <div id='gProfile'><img id='profile-image' src="./emptyProfile.png" width="50" height="50" alt="" /></div> -->
-      </div>
       <div contenteditable="true" class='auth_name' id='name'></div>
       <button id='signOut'>Sign out</button>
-      <div id="loader"></div>
     </div>
   </div>
+  <div class="sliders-wrapper">
+    <div class="slider-container">
+      <label for="blur-slider">Blur</label>
+      <input type="range" id="blur-slider" min="0" max="30" step="0.1" value="0">
+    </div>
+    <div class="slider-container">
+      <label for="scale-slider">Scale</label>
+      <input type="range" id="scale-slider" min="0.25" max="4" step="0.1" value="1">
+    </div>
+</div>
   <div id="grid-wrapper">
     <div id="grid-container">  </div>
   </div>

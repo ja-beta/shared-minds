@@ -54,9 +54,12 @@ function subscribeToUsers() {
 
 //____________________________________________________________________________________
 //GRID STUFF
+const gridContainer = document.getElementById("grid-container");
+const blurSlider = document.getElementById("blur-slider");
+const scaleSlider = document.getElementById("scale-slider");
 
 document.addEventListener("DOMContentLoaded", () => {
-    createGrid(5, 5);
+    createGrid(7, 7);
     let cells = Array.from(document.getElementsByClassName("cell"));
 
     cells.forEach(cell => {
@@ -80,14 +83,26 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
     });
+
+    blurSlider.value = blurSlider.defaultValue;
+    gridContainer.style.filter = `blur(${blurSlider.value}px)`;
+    
+
+    blurSlider.addEventListener("input", (event) => {
+        const blurValue = event.target.value;
+        gridContainer.style.filter = `blur(${blurValue}px)`;
+    });
+
+    scaleSlider.addEventListener("input", (event) => {
+        const scaleValue = event.target.value;
+        gridContainer.style.transform = `scale(${scaleValue})`;
+    });
 });
 
 
-const gridContainer = document.getElementById("grid-container");
-
 function createGrid(x, y) {
-    gridContainer.style.gridTemplateColumns = `repeat(${x}, 24px)`;
-    gridContainer.style.gridTemplateRows = `repeat(${y}, 24px)`;
+    gridContainer.style.gridTemplateColumns = `repeat(${x}, 48px)`;
+    gridContainer.style.gridTemplateRows = `repeat(${y}, 48px)`;
 
     for (let i = 0; i < x; i++) {
         for (let j = 0; j < y; j++) {
@@ -118,6 +133,8 @@ function createGrid(x, y) {
         }
     }
 }
+
+
 
 
 //____________________________________________________________________________________
