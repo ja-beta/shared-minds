@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-analytics.js";
-import { getDatabase, ref, set, query, orderByChild, equalTo, push, onValue, onChildAdded, onChildChanged, onChildRemoved } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
+import { getDatabase, ref, set, get, query, orderByChild, equalTo, push, onValue, onChildAdded, onChildChanged, onChildRemoved } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
 import { firebaseConf, apiUrl } from './config.js';
 
 
@@ -10,7 +10,7 @@ let name;
 let db;
 let app;
 let myDBID;
-let appName = "authImage";
+let appName = "collaborative-grid";
 let userColor = generateRandomColor();
 
 const firebaseConfig = firebaseConf;
@@ -62,17 +62,35 @@ document.addEventListener("DOMContentLoaded", () => {
     cells.forEach(cell => {
         cell.addEventListener("click", () => {
             console.log("clicked", cell.id);
-            cell.style.backgroundColor = cell.style.backgroundColor === "rgb(255, 255, 255)" ? "rgb(0, 0, 0)" : "rgb(255, 255, 255)";
+            const cellRef = ref(db, `${appName}/cells/${cell.id}`);
+            get(cellRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    let cellData = snapshot.val();
+                    if (cellData.currentColor === "white") {
+                        cell.style.backgroundColor = "rgb(0, 0, 0)";
+                        set(cellRef, {
+                            blackCount: cellData.blackCount + 1,
+                            whiteCount: cellData.whiteCount,
+                            currentColor: "black"
+                        });
+                    } else {
+                        cell.style.backgroundColor = "rgb(255, 255, 255)";
+                        set(cellRef, {
+                            blackCount: cellData.blackCount,
+                            whiteCount: cellData.whiteCount + 1,
+                            currentColor: "white"
+                        });
+                    }
+                }
+            });
         });
     });
-
 });
 
 
 const gridContainer = document.getElementById("grid-container");
 
-function createGrid(x, y){
-
+function createGrid(x, y) {
     gridContainer.style.gridTemplateColumns = `repeat(${x}, 24px)`;
     gridContainer.style.gridTemplateRows = `repeat(${y}, 24px)`;
 
@@ -81,8 +99,28 @@ function createGrid(x, y){
             const div = document.createElement("div");
             div.classList.add("cell");
             div.id = i + "-" + j;
-            div.style.backgroundColor = "#ffffff";
             gridContainer.appendChild(div);
+
+            const cellRef = ref(db, `${appName}/cells/${div.id}`);
+            get(cellRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    let cellData = snapshot.val();
+                    if (cellData.blackCount > cellData.whiteCount) {
+                        div.style.backgroundColor = "rgb(0, 0, 0)";
+                    } else if (cellData.whiteCount > cellData.blackCount) {
+                        div.style.backgroundColor = "rgb(255, 255, 255)";
+                    } else {
+                        div.style.backgroundColor = Math.random() < 0.5 ? "rgb(0, 0, 0)" : "rgb(255, 255, 255)";
+                    }
+                } else {
+                    set(cellRef, {
+                        blackCount: 0,
+                        whiteCount: 0,
+                        currentColor: "white"
+                    });
+                    div.style.backgroundColor = "rgb(255, 255, 255)";
+                }
+            });
         }
     }
 }
@@ -149,10 +187,15 @@ function connectToFirebaseAuth() {
             myDBID = authUser.multiFactor.user.uid;
             console.log("authUser", authUser, "myDBID", myDBID);
             document.getElementById("name").innerHTML = authUser.multiFactor.user.displayName;
-            if (authUser.multiFactor.user.photoURL != null)
-                document.getElementById("profile-image").src = authUser.multiFactor.user.photoURL;
+            // if (authUser.multiFactor.user.photoURL != null)
+            //     document.getElementById("profile-image").src = authUser.multiFactor.user.photoURL;
             checkForUserInRegularDB(authUser.multiFactor.user);
-            subscribeToUsers()
+            subscribeToUsers();
+
+            let authWrapper = document.getElementById("firebaseui-auth-wrapper");
+            let authContainer = document.getElementById("firebaseui-auth-container");
+            authWrapper.classList.add("logged-in");
+            authContainer.classList.add("logged-in");
         }
     });
 }

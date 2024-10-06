@@ -12,16 +12,35 @@ body {
   margin: 0px;
 }
 
-#firebaseui-auth-container {
+#firebaseui-auth-wrapper {
+  width: 100vw;
+  height: 100vh;
+  background-color: #ffffffb6;
   position: fixed;
-  /* or absolute */
-  top: 10%;
-  left: 80%;
-  z-index: 9;
-
+  z-index: 10;
+  display: flex;
   align-items: center;
   justify-content: center;
+  backdrop-filter: blur(4px);
 }
+
+#firebaseui-auth-wrapper.logged-in{
+  padding: 40px;
+  width: fit-content;
+  height: fit-content;
+  background-color: transparent;
+  position: fixed;
+  top: 0;
+  right: 0;
+  backdrop-filter: blur(0);
+}
+
+#firebaseui-auth-container.logged-in{
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
 
 #profile {
   align-items: right;
@@ -77,4 +96,5 @@ body {
 .cell{
   width: 24px;
   height: 24px;
+  cursor: pointer;
 }
