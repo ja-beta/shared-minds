@@ -117,17 +117,26 @@ function createGrid(x, y) {
                     let cellData = snapshot.val();
                     if (cellData.blackCount > cellData.whiteCount) {
                         div.style.backgroundColor = "rgb(0, 0, 0)";
+                        cellData.currentColor = "black";
                     } else if (cellData.whiteCount > cellData.blackCount) {
                         div.style.backgroundColor = "rgb(255, 255, 255)";
+                        cellData.currentColor = "white";
                     } else {
-                        div.style.backgroundColor = Math.random() < 0.5 ? "rgb(0, 0, 0)" : "rgb(255, 255, 255)";
+                        // If counts are equal, choose randomly
+                        const randomColor = Math.random() < 0.5 ? "black" : "white";
+                        div.style.backgroundColor = randomColor === "black" ? "rgb(0, 0, 0)" : "rgb(255, 255, 255)";
+                        cellData.currentColor = randomColor;
                     }
+                    // Update the database with the currentColor
+                    set(cellRef, cellData);
                 } else {
+                    // Initialize cell data in the database if it doesn't exist
                     set(cellRef, {
                         blackCount: 0,
                         whiteCount: 0,
                         currentColor: "white"
                     });
+                    div.style.backgroundColor = "rgb(255, 255, 255)";
                 }
             });
         }
