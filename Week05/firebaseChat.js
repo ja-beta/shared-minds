@@ -56,7 +56,7 @@ function subscribeToUsers() {
 //GRID STUFF
 
 document.addEventListener("DOMContentLoaded", () => {
-    createGrid(10, 10);
+    createGrid(5, 5);
     let cells = Array.from(document.getElementsByClassName("cell"));
 
     cells.forEach(cell => {
@@ -68,19 +68,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     let cellData = snapshot.val();
                     if (cellData.currentColor === "white") {
                         cell.style.backgroundColor = "rgb(0, 0, 0)";
-                        set(cellRef, {
-                            blackCount: cellData.blackCount + 1,
-                            whiteCount: cellData.whiteCount,
-                            currentColor: "black"
-                        });
+                        cellData.blackCount += 1;
+                        cellData.currentColor = "black";
                     } else {
                         cell.style.backgroundColor = "rgb(255, 255, 255)";
-                        set(cellRef, {
-                            blackCount: cellData.blackCount,
-                            whiteCount: cellData.whiteCount + 1,
-                            currentColor: "white"
-                        });
+                        cellData.whiteCount += 1;
+                        cellData.currentColor = "white";
                     }
+                    set(cellRef, cellData);
                 }
             });
         });
@@ -118,7 +113,6 @@ function createGrid(x, y) {
                         whiteCount: 0,
                         currentColor: "white"
                     });
-                    div.style.backgroundColor = "rgb(255, 255, 255)";
                 }
             });
         }
